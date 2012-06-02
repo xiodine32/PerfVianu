@@ -1,4 +1,7 @@
-PerfVianu
+Performante Vianiste
 =========
+Versiunea mea!
 
-Performante Vianu - Versiunea Rares!
+SERVER - TCP/IP        - Console
+CLIENT - INPUT DATA    - WIN32 FORM
+CLIENT - DISPLAY DATA  - SDL OPENGL
