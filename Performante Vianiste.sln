@@ -4,6 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{B054168B-254D-4E09-B03D-5F4B89C9652C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Inputer", "Inputer\Inputer.vcxproj", "{0405C421-EA3E-4089-9E3A-064EED419B35}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B054168B-254D-4E09-B03D-5F4B89C9652C} = {B054168B-254D-4E09-B03D-5F4B89C9652C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Drawer", "Drawer\Drawer.vcxproj", "{CE21DDCC-8828-48CC-BC0B-C7B8BCB2443F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B054168B-254D-4E09-B03D-5F4B89C9652C} = {B054168B-254D-4E09-B03D-5F4B89C9652C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +27,10 @@ Global
 		{0405C421-EA3E-4089-9E3A-064EED419B35}.Debug|Win32.Build.0 = Debug|Win32
 		{0405C421-EA3E-4089-9E3A-064EED419B35}.Release|Win32.ActiveCfg = Release|Win32
 		{0405C421-EA3E-4089-9E3A-064EED419B35}.Release|Win32.Build.0 = Release|Win32
+		{CE21DDCC-8828-48CC-BC0B-C7B8BCB2443F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE21DDCC-8828-48CC-BC0B-C7B8BCB2443F}.Debug|Win32.Build.0 = Debug|Win32
+		{CE21DDCC-8828-48CC-BC0B-C7B8BCB2443F}.Release|Win32.ActiveCfg = Release|Win32
+		{CE21DDCC-8828-48CC-BC0B-C7B8BCB2443F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

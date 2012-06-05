@@ -1,35 +1,20 @@
-
+//SERVER
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include <windows.h>
-#include <winsock2.h>
-#include <stdio.h>
-#include <vector>
-#include <stack>
-using namespace std;
+
+#include "main.h"
+#include "rules.h"
 WSADATA dat;
 
-struct client{
-	SOCKET s;
-	bool destroyed;
-}; 
+
 vector<client> clients;
 vector<client> tempo;
 stack<int> todestroy;
 
 
-const bool debug=true;
 
-
-void d(const char *data){
-	if (!debug) return;
-	printf("[DEBUG]%s\n",data);
-}
-void s(const char *data){
-	printf("[INFO]%s\n",data);
-}
 SOCKET server;
 DWORD WINAPI Threading(LPVOID text){
 	while (true){
@@ -46,7 +31,85 @@ DWORD WINAPI Threading(LPVOID text){
 	}
 	return 0;
 }
+
+void handle_text(client *f,const char *text){
+	tick();
+	if (strcmp(text,"ok")==0)
+		return;
+	if (strcmp(text,"start")==0){
+		d("Starting contest");
+		start_contest();
+		return;
+	}
+	if (text[0]=='s'){
+		d("Changing name");
+		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char *p=strtok(tmp,"|");
+		p=strtok(NULL,"|");
+		int tta=atoi(p);
+		p=strtok(NULL,"|");
+		char namec[8];
+		strcpy(namec,p);
+		set_team_name(tta,namec);
+		return;
+	}
+	if (text[0]=='S'){
+		d("Changing Special Problem");
+		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char *p=strtok(tmp,"|");
+		p=strtok(NULL,"|");
+		int tta=atoi(p);
+		p=strtok(NULL,"|");
+		int prbl=atoi(p);
+		set_team_bonus(tta,prbl);
+		return;
+	}
+	if (strcmp(text,"time")==0){
+		d("Sending timeleft to console");
+		char toSend[204]={0};
+		strcpy(toSend,say_time_left());
+		send(f->s,toSend,sizeof(toSend),0);
+		return;
+	}
+	if (strcmp(text,"data")==0){
+		char toSend[4096]={0};
+		strcpy(toSend,say_drawables());
+		send(f->s,toSend,sizeof(toSend),0);
+		return;
+	}
+	if (strstr(text,"add|")){
+		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char *p=strtok(tmp,"|");
+		p=strtok(NULL,"|");
+		int tta=atoi(p),add_amm=0;
+		p=strtok(NULL,"|");
+		add_amm=atoi(p);
+		add_team_score(tta,add_amm);
+		return;
+	}
+	if (strstr(text,"a|")){
+		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char *Q=strtok(tmp,"|");
+		int t,p,a;
+		Q=strtok(NULL,"|");t=atoi(Q);
+		Q=strtok(NULL,"|");p=atoi(Q);
+		Q=strtok(NULL,"|");a=atoi(Q);
+		add_answer(t,p,a);
+		return;
+	}
+	s("command not recognised");
+	s(text);
+	return;
+}
+
+
 int main(){
+
+	d("Reading configuration");
+	readconfig();
+
+
+
 	d("Loading winsock2");
 	WSAStartup(MAKEWORD(2,2),&dat);
 	d("Loading server");
@@ -66,7 +129,6 @@ int main(){
 	d("Waiting for clients. DERP.");
 	bool running=true;
 	int l=sizeof(anews);
-	
 	d("Starting Thread #1");
 	searchT=CreateThread(NULL,0,Threading,&l,0,NULL);
 	d("Starting main loop");
@@ -82,11 +144,10 @@ int main(){
 		for (vector<client>::iterator i=tempo.begin();i!=tempo.end();i++){
 			++t;
 			if (i->destroyed)continue;
-			char text[1024];
+			char text[4096];
 			int out=recv(i->s,text,sizeof(text),0);
 			if (out>0){
-				d(text);	
-				//HANDLE DATA
+				handle_text(&(*i),text);
 			}
 			else{
 				if (out==0 || out==INVALID_SOCKET){

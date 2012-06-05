@@ -1,4 +1,4 @@
-
+//CONSOLE CLIENT
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -7,8 +7,10 @@
 #include <winsock2.h>
 #include <stdio.h>
 
-const bool debug=true;
 
+const bool debug=true;
+bool recieved=false;
+bool running=true;
 
 void d(const char *data){
 	if (!debug) return;
@@ -16,10 +18,81 @@ void d(const char *data){
 }
 
 SOCKET client;
+char sendText[4096]={0},recvText[4096]={0};
+int handle_text(const char *text){
+	if (strcmp(text,"help")==0){
+		printf("\nAdd an answer: a<TEAM><PROBLEM><ANSWER>\n");
+		printf("Start Server: start\n");
+		printf("Time Left: timeleft\n");
+		printf("Set Team Name: setn<TEAM><NAME>\n");
+		printf("Set Team Special Problem: setp<TEAM><#>\n");
+		printf("Add/Subtract points: add_<TEAM>|<POINTS> (can be negative)\n");
+		printf("\n");
+		return 0;
+	}
+	if (strcmp(text,"start")==0){
+		printf("******************\n*STARTING CONTEST*\n******************\n");
+		strcpy(sendText,"start");
+		return 1;
+	}
+	if (strcmp(text,"timeleft")==0){
+		strcpy(sendText,"time");
+		printf("Requested time left\n");
+		return 1;
+	}
+	if (strstr(text,"setn")){
+		sprintf(sendText,"s|%c%c|%s",text[4],text[5],text+6);
+		printf("Set Name for for %c%c, new name:%s\n",text[4],text[5],text+6);
+		return 1;
+	}
+	if (strstr(text,"setp")){
+		sprintf(sendText,"S|%c%c|%c%c",text[4],text[5],text[6],text[7]);
+		printf("Set Special Problem for %c%c, problem #%c%c.\n",text[4],text[5],text[6],text[7]);
+		return 1;
+	}
+	if (strstr(text,"add_")){
+		text=(text+4);
+		sprintf(sendText,"add|%s",text);
+		printf("Did that, done that.\n");
+		return 1;
+	}
+	if (text[0]=='a' && (text[1]>='0' && text[1]<='9')){
+		char tmp[4096]={0};strcpy(tmp,text);
+		sprintf(sendText,"a|%c%c|%c%c|%c%c%c%c",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
+		printf("Answer for TEAM:%c%c, PROBLEM:%c%c with %c%c%c%c\n",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
+		return 1;
+	}
+	printf("COMMAND NOT FOUND\n");	
+	return 0;
+}
 
+DWORD WINAPI listener(LPVOID arg){
+	while (running){
+		if (recv(client,recvText,sizeof(recvText),0)>0){
+			recieved=true;
+			d("RECIEVED TEXT");
+		}
+		Sleep(10);
+	}
+	return 0;
+}
+bool newData=false;
+char toSend[4096]={0};
+DWORD WINAPI sender(LPVOID arg){
+	char tmp[4096]={"ok"};
+	if (newData){
+		newData=false;
+	}
+	else
+		strcpy(toSend,tmp);
+	while (running){
+		send(client,toSend,sizeof(toSend),0);
+	}
+	return 0;
+}
 int main(){
-	char text[1024]={"127.0.0.1"};
-	//printf("ENTER SERVER IP:");scanf("%s",&text);
+	char text[4096]={"127.0.0.1"};
+	printf("ENTER SERVER IP:");scanf("%s",&text);
 	WSADATA dat;
 	WSAStartup(MAKEWORD(2,2),&dat);
 	d("start");
@@ -34,22 +107,22 @@ int main(){
 
 	client=socket(AF_INET,SOCK_STREAM,0);
 
+	
 
 	if ( connect( client,(sockaddr*)&sin, sizeof sin ) == SOCKET_ERROR )
 	{
 		d("ERROR CONNECTING");
+		return 1;
 	}
-	bool running=true;
+	CreateThread(NULL,0,listener,&text,0,0);
 	memset(text,0,sizeof(text));
-	strcpy(text,"I AM GOD");
+	strcpy(text,"IAMCLIENT");
+	CreateThread(NULL,0,sender,&text,0,0);
 	while (running){
-		d("send");
-		if (!(send(client,text,sizeof(text),0)>0)){
-			d("ERR");
-			running=false;
-		} else
-			Sleep(100);
-		
+		printf("<SERVER>:");scanf("%s",&text);
+		if (handle_text(text))
+			if (!(send(client,sendText,sizeof(sendText),0)>0)){d("ERR");running=false;};
+	
 	}
 	d("end");
 	getchar();
