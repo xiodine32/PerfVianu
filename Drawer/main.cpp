@@ -252,7 +252,9 @@ void drawText(int x,int y,double size,double r,double g,double b,double a,const 
 
 
 int s_moved=-300; 
+bool sigla=true;
 void tick_sigla(){
+	if (!sigla)return;
 	s_moved++;
 	if (s_moved>-1)
 		s_moved=-300;
@@ -262,6 +264,7 @@ void draw_timer(){
 	drawText(SCREEN_WIDTH/2-5*64,0,128,1,1,1,1,"%.2dm%.2ds",time_left/60,time_left%60);
 }
 void draw_sigla(){
+	if (!sigla)return;
 	for (int i=0;i<=1580;i+=300){
 	glColor4f(1,1,1,1);
 	glBindTexture(GL_TEXTURE_2D,siglaID);
@@ -296,6 +299,9 @@ void up(){
 	else
 		if (screen==0)
 			screen=1;
+	if (!key[SDLK_l] && keyl[SDLK_l])
+		sigla=!sigla;
+
 	if (!key[SDLK_1] && keyl[SDLK_1])
 		screen=1;
 	if (!key[SDLK_2] && keyl[SDLK_2])
