@@ -227,12 +227,6 @@ void load(){
 		glTexImage2D( GL_TEXTURE_2D, 0, 4, 512, 512, 0,GL_RGBA, GL_UNSIGNED_BYTE,r);
 		delete r;
 		SDL_FreeSurface(surface);
-		/*SDL_Surface *fas=SDL_LoadBMP("sigla.bmp");
-		glGenTextures(1,&siglaID);
-		glBindTexture(GL_TEXTURE_2D,siglaID);
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexImage2D( GL_TEXTURE_2D, 0, 3, 512, 512, 0,GL_BGR, GL_UNSIGNED_BYTE,fas->pixels);*/
 }
 void drawText(int x,int y,double size,double r,double g,double b,double a,const char *X,...){
 	va_list arg;
@@ -329,9 +323,9 @@ void dr(){
 DWORD WINAPI thread(LPVOID arg){
 	generate_font();
 	SDL_Init(SDL_INIT_VIDEO);
-	int w=int(GetSystemMetrics(SM_CXFULLSCREEN)*4/5.0),h=int(GetSystemMetrics(SM_CYFULLSCREEN)*4/5.0);
+	int w=int(GetSystemMetrics(SM_CXFULLSCREEN)),h=int(GetSystemMetrics(SM_CYFULLSCREEN));
 	SCREEN_WIDTH=1280;SCREEN_HEIGHT=1024;
-	SDL_SetVideoMode(w,h,0,SDL_OPENGL);//|SDL_FULLSCREEN);
+	SDL_SetVideoMode(w,h,0,SDL_OPENGL|SDL_FULLSCREEN);
 
 	glEnable(GL_TEXTURE_2D);
 
