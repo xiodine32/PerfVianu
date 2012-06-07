@@ -14,7 +14,7 @@ bool running=true;
 
 void d(const char *data){
 	if (!debug) return;
-	printf("[DEBUG]%s\n",data);
+	//printf("[DEBUG]%s\n",data);
 }
 
 SOCKET client;
@@ -24,11 +24,14 @@ int handle_text(const char *text){
 		printf("\nAdd an answer: a<TEAM><PROBLEM><ANSWER>\n");
 		printf("Start Server: start\n");
 		printf("Time Left: timeleft\n");
-		printf("Set Team Name: setn<TEAM><NAME>\n");
 		printf("Set Team Special Problem: setp<TEAM><#>\n");
 		printf("Add/Subtract points: add_<TEAM>|<POINTS> (can be negative)\n");
 		printf("\n");
 		return 0;
+	}
+	if (strcmp(text,"START REC")==0){
+		strcpy(sendText,"OAIE");
+		return 1;
 	}
 	if (strcmp(text,"STOP REC")==0){
 		strcpy(sendText,"PULA");
@@ -42,11 +45,6 @@ int handle_text(const char *text){
 	if (strcmp(text,"timeleft")==0){
 		strcpy(sendText,"time");
 		printf("Requested time left\n");
-		return 1;
-	}
-	if (strstr(text,"setn")){
-		sprintf(sendText,"s|%c%c|%s",text[4],text[5],text+6);
-		printf("Set Name for for %c%c, new name:%s\n",text[4],text[5],text+6);
 		return 1;
 	}
 	if (strstr(text,"setp")){

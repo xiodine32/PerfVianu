@@ -17,15 +17,17 @@ bool listening=true;
 
 SOCKET server;
 DWORD WINAPI Threading(LPVOID text){
-	while (listening){
+	while (true){
 		while (listen(server, 1000)==INVALID_SOCKET) Sleep(100);
 		SOCKET c=accept(server,NULL,NULL);
-		if (c!=INVALID_SOCKET && listening){
-			d("FOUND A CLIENT!");
-			client temp;
-			temp.s=c;
-			temp.destroyed=false;
-			clients.push_back(temp);
+		if (c!=INVALID_SOCKET ){ 
+			if (listening){
+				d("FOUND A CLIENT!");
+				client temp;
+				temp.s=c;
+				temp.destroyed=false;
+				clients.push_back(temp);
+			} else s("Rejected a connection");
 		}
 		Sleep(100);
 	}
@@ -41,18 +43,6 @@ void handle_text(client *f,const char *text){
 		start_contest();
 		return;
 	}
-	if (text[0]=='s'){
-		d("Changing name");
-		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
-		char *p=strtok(tmp,"|");
-		p=strtok(NULL,"|");
-		int tta=atoi(p);
-		p=strtok(NULL,"|");
-		char namec[8];
-		strcpy(namec,p);
-		set_team_name(tta,namec);
-		return;
-	}
 	if (text[0]=='S'){
 		d("Changing Special Problem");
 		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
@@ -63,6 +53,10 @@ void handle_text(client *f,const char *text){
 		int prbl=atoi(p);
 		set_team_bonus(tta,prbl);
 		return;
+	}
+	if (strcmp(text,"OAIE")==0){
+		listening=true;
+		d("ACCEPTING NEW CLIENTS");
 	}
 	if (strcmp(text,"time")==0){
 		d("Sending timeleft to console");
@@ -99,7 +93,6 @@ void handle_text(client *f,const char *text){
 	}
 	if (strcmp(text,"PULA")==0){
 		listening=false;
-		CloseHandle(searchT);
 		d("NO LONGER ACCEPTING THREADS");
 		return;
 		

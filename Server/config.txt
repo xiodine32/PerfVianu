@@ -1,8 +1,38 @@
 NUMARUL DE ECHIPE
-20
+29
 TIMP CONCURS (in minute)
-60
+120
 PROBLEME
 20
 REZOLVARI
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+NUMELE ECHIPELOR
+team 01
+team 02
+team 03
+team 04
+team 05
+team 06
+team 07
+team 08
+team 09
+team 10
+team 11
+team 12
+team 13
+team 14
+team 15
+team 16
+team 17
+team 18
+team 19
+team 20
+team 21
+team 22
+team 23
+team 24
+team 25
+team 26
+team 27
+team 28
+team 29

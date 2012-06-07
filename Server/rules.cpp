@@ -36,18 +36,21 @@ void readconfig(){
 		for (int j=1;j<=echipe;j++)
 			probl[i].answered[j]=false;
 	}
+	fgets(text,4096,f);
+	for (int i=1;i<=echipe;i++){
+		fgets(echipa[i].nume,40,f);
+		while (echipa[i].nume[strlen(echipa[i].nume)-1]=='\n')
+			echipa[i].nume[strlen(echipa[i].nume)-1]=0;
 
-
+	}
 
 	//generate content
-	char tmp[8];
 	for (int i=1;i<=echipe;i++){
-		sprintf(tmp,"team %.2d",i);
-		strcpy(echipa[i].nume,tmp);
+		echipa[i].corect_pb=false;
 		echipa[i].punctaj=PUNCTAJ_ECHIPA_INITIAL;
 		echipa[i].corecte=0;
 		echipa[i].raspunsuri[0]=0;
-		echipa[i].problema_bonus=1;
+		echipa[i].problema_bonus=-1;
 		sprintf(text,"created team %d",i);
 		d(text);
 	}
@@ -120,8 +123,11 @@ void add_answer(int team,int problem,int answer){
 		echipa[team].punctaj+=probl[problem].bonus;
 		if (echipa[team].problema_bonus==problem){
 			//double power
-			echipa[team].punctaj+=probl[problem].puncte;
-			echipa[team].punctaj+=probl[problem].bonus;
+			if (!echipa[team].corect_pb){
+				echipa[team].punctaj+=probl[problem].puncte;
+				echipa[team].punctaj+=probl[problem].bonus;
+				echipa[team].corect_pb=true;
+			}
 		}
 		switch (probl[problem].bonus){
 		case BONUS_MAX:probl[problem].bonus=15;break;
@@ -140,7 +146,8 @@ void add_answer(int team,int problem,int answer){
 		if (echipa[team].problema_bonus==problem)
 			echipa[team].punctaj-=PENALITATE_GRESEALA;
 		echipa[team].punctaj-=PENALITATE_GRESEALA;
-		probl[problem].puncte+=2;
+		if (probl[problem].bonus==BONUS_MAX)
+			probl[problem].puncte+=2;
 	}
 }
 
@@ -152,11 +159,16 @@ void tick(){
 		FILE *a=fopen("backup.txt","w");
 		fprintf(a,"%s",tw);
 		fclose(a);
-		draw=-120;
+		draw=-5*60;
 	}
 
 	static int lleft=-1;
 	int left=contest_time*60-(clock()-time_start)/CLK_TCK;
+	if ((clock()-time_start)/CLK_TCK>20*60){
+		for (int i=1;i<=echipe;i++)
+			if (echipa[i].problema_bonus==-1)
+				echipa[i].problema_bonus=1;
+	}
 	if (lleft==-1) lleft=left;
 	if (lleft==left) return;
 	int nMin=(left/60)*60;
@@ -175,6 +187,10 @@ void set_team_bonus(int team,int pb){
 
 	int ela=(clock()-time_start)/CLK_TCK;
 	if (ela>600) {s("Cannot modify team bonus, time expired.");return;}
+	if (echipa[team].problema_bonus!=-1){
+		s("Team bonus already modified");
+		return;
+	}
 	echipa[team].problema_bonus=pb;
 
 }
@@ -210,3 +226,4 @@ void load_backup(){
 		}
 	}
 }
+ 

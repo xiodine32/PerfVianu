@@ -1,0 +1,35 @@
+NUMARUL DE ECHIPE
+26
+TIMP CONCURS (in minute)
+120
+PROBLEME
+20
+REZOLVARI
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+NUMELE ECHIPELOR
+9A -Arca Lu' Noe
+9A -Cartof
+9G
+10H-Quantum
+10D-Ten Shots
+10D-8601
+10E-Unu
+10E-Doi
+10G-Echipa I
+10G-Echipa II
+10F
+11A
+11B-Le wild team
+11C
+11D-Monstrii Marini
+11D-COUT<<"VIANU"
+11G-Surorile Cangrena
+11F
+9C
+10A
+10B
+10D
+9B-Echipa I
+9B-Echipa II
+Biultele de foc
+Echipa CNMV

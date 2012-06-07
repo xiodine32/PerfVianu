@@ -4,7 +4,7 @@
 const int PENALITATE_GRESEALA=10;
 const int BONUS_MAX=20;
 const int PROBLEMA_INITIAL=20;
-const int PUNCTAJ_ECHIPA_INITIAL=120;
+const int PUNCTAJ_ECHIPA_INITIAL=210;
 const bool debug=true;
 
 
@@ -21,11 +21,12 @@ void set_team_name(int team, char name[8]);
 void set_team_bonus(int team,int pb);
 void load_backup();
 struct team {
-	char nume[17];
+	char nume[40];
 	int punctaj;
 	int corecte;
 	int problema_bonus;
 	int raspunsuri[101];
+	bool corect_pb;
 } ;
 struct problema{
 	int raspuns;
