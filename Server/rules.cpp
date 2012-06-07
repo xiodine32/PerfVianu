@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <time.h>
 #include "rules.h"
 
@@ -78,7 +79,7 @@ const char *say_time_left(){
 	return towrite;
 }
 const char *say_drawables(){
-	char towrite[4096]={"ERROR"};
+	char towrite[4096]={"ERROR"};memset(towrite,0,sizeof(towrite));strcpy(towrite,"ERROR");
 	if (!started) {nostart();return towrite;}
 	sprintf(towrite,"%s|%d|%d|",say_time_left(),echipe,probleme);
 	for (int i=1;i<=echipe;i++){
@@ -137,20 +138,29 @@ void add_answer(int team,int problem,int answer){
 	else{
 		
 		if (echipa[team].problema_bonus==problem)
-			//double trouble
 			echipa[team].punctaj-=PENALITATE_GRESEALA;
 		echipa[team].punctaj-=PENALITATE_GRESEALA;
+		probl[problem].puncte+=2;
 	}
 }
 
 void tick(){
 	if (!started) return;
+	static int draw=-1;
+	if (++draw==0){
+		char tw[4096]={0};strcpy(tw,say_drawables());
+		FILE *a=fopen("backup.txt","w");
+		fprintf(a,"%s",tw);
+		fclose(a);
+		draw=-120;
+	}
+
 	static int lleft=-1;
 	int left=contest_time*60-(clock()-time_start)/CLK_TCK;
 	if (lleft==-1) lleft=left;
 	if (lleft==left) return;
 	int nMin=(left/60)*60;
-	if (left==nMin){
+	if (left==nMin && left>20*60){
 		for (int i=1;i<=probleme;i++)
 			if (probl[i].bonus==BONUS_MAX)
 				probl[i].puncte++;
@@ -162,8 +172,41 @@ void set_team_name(int team, char name[8]){
 }
 void set_team_bonus(int team,int pb){
 	if (!started) {nostart();return;}
+
 	int ela=(clock()-time_start)/CLK_TCK;
-	if (ela>60) {s("Cannot modify team boous, time expired.");return;}
+	if (ela>600) {s("Cannot modify team bonus, time expired.");return;}
 	echipa[team].problema_bonus=pb;
 
+}
+
+void load_backup(){
+	started=true;
+	FILE *f=fopen("backup.txt","r");
+	char pd[4096];
+	fgets(pd,4096,f);
+	
+	if (strcmp(pd,"ERROR")==0)return;
+	d("processing data");
+	char *mover;
+	mover=strtok(pd,"|");  time_start=clock()-atoi(mover);
+	mover=strtok(NULL,"|");echipe=atoi(mover);
+	mover=strtok(NULL,"|");probleme=atoi(mover);
+	for (int i=1;i<=echipe;i++){
+		mover=strtok(NULL,"|");strcpy(echipa[i].nume,mover);
+		mover=strtok(NULL,"|");echipa[i].punctaj=atoi(mover);
+		mover=strtok(NULL,"|");echipa[i].corecte=atoi(mover);
+		mover=strtok(NULL,"|");echipa[i].problema_bonus=atoi(mover);
+		for (int j=1;j<=probleme;j++){
+			mover=strtok(NULL,"|");echipa[i].raspunsuri[j]=atoi(mover);
+		}
+
+	}
+	for (int i=1;i<=probleme;i++){
+		mover=strtok(NULL,"|");probl[i].puncte=atoi(mover);
+		mover=strtok(NULL,"|");probl[i].raspuns=atoi(mover);
+		mover=strtok(NULL,"|");probl[i].bonus=atoi(mover);
+		for (int j=1;j<=echipe;j++){
+			mover=strtok(NULL,"|");probl[i].answered[j]=atoi(mover);
+		}
+	}
 }

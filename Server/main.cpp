@@ -13,14 +13,14 @@ vector<client> clients;
 vector<client> tempo;
 stack<int> todestroy;
 
-
+bool listening=true;
 
 SOCKET server;
 DWORD WINAPI Threading(LPVOID text){
-	while (true){
+	while (listening){
 		while (listen(server, 1000)==INVALID_SOCKET) Sleep(100);
 		SOCKET c=accept(server,NULL,NULL);
-		if (c!=INVALID_SOCKET){
+		if (c!=INVALID_SOCKET && listening){
 			d("FOUND A CLIENT!");
 			client temp;
 			temp.s=c;
@@ -31,7 +31,7 @@ DWORD WINAPI Threading(LPVOID text){
 	}
 	return 0;
 }
-
+HANDLE searchT;
 void handle_text(client *f,const char *text){
 	tick();
 	if (strcmp(text,"ok")==0)
@@ -97,6 +97,13 @@ void handle_text(client *f,const char *text){
 		add_answer(t,p,a);
 		return;
 	}
+	if (strcmp(text,"PULA")==0){
+		listening=false;
+		CloseHandle(searchT);
+		d("NO LONGER ACCEPTING THREADS");
+		return;
+		
+	}
 	s("command not recognised");
 	s(text);
 	return;
@@ -106,8 +113,15 @@ void handle_text(client *f,const char *text){
 int main(){
 
 	d("Reading configuration");
-	readconfig();
-
+	FILE *t=fopen("backup.txt","r");
+	if (t!=NULL){
+		fclose(t);
+		s("LOADING BACKUP DATA");
+		load_backup();
+	} else{
+		s("Starting new SERVER");
+		readconfig();
+	}
 
 
 	d("Loading winsock2");
@@ -125,7 +139,7 @@ int main(){
 		d("ERROR BINDING");
 		goto cleanup;
 	}
-	HANDLE searchT;
+	
 	d("Waiting for clients. DERP.");
 	bool running=true;
 	int l=sizeof(anews);

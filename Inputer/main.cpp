@@ -30,6 +30,10 @@ int handle_text(const char *text){
 		printf("\n");
 		return 0;
 	}
+	if (strcmp(text,"STOP REC")==0){
+		strcpy(sendText,"PULA");
+		return 1;
+	}
 	if (strcmp(text,"start")==0){
 		printf("******************\n*STARTING CONTEST*\n******************\n");
 		strcpy(sendText,"start");
@@ -58,9 +62,19 @@ int handle_text(const char *text){
 	}
 	if (text[0]=='a' && (text[1]>='0' && text[1]<='9')){
 		char tmp[4096]={0};strcpy(tmp,text);
-		sprintf(sendText,"a|%c%c|%c%c|%c%c%c%c",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
-		printf("Answer for TEAM:%c%c, PROBLEM:%c%c with %c%c%c%c\n",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
-		return 1;
+		printf("Answer for TEAM:%c%c - PROBLEM:%c%c - %c%c%c%c\n",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
+		char ans[1024]={0};
+		printf("Are you sure? (yes/YES/Y/y) :");scanf("%s",&ans);
+		if (strcmp(ans,"yes")==0 || strcmp(ans,"YES")==0 || strcmp(ans,"Y")==0 || strcmp(ans,"y")==0){
+			sprintf(sendText,"a|%c%c|%c%c|%c%c%c%c",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
+			printf("[SENT]Answer for TEAM:%c%c, PROBLEM:%c%c with %c%c%c%c\n",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
+			gets(tmp);
+			return 1;
+
+		}
+		printf("[NOT SENT]Answer for TEAM:%c%c - PROBLEM:%c%c - %c%c%c%c\n",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
+		gets(tmp);
+		return 0;
 	}
 	printf("COMMAND NOT FOUND\n");	
 	return 0;
@@ -114,12 +128,13 @@ int main(){
 		d("ERROR CONNECTING");
 		return 1;
 	}
+	gets(text);
 	CreateThread(NULL,0,listener,&text,0,0);
 	memset(text,0,sizeof(text));
 	strcpy(text,"IAMCLIENT");
 	CreateThread(NULL,0,sender,&text,0,0);
 	while (running){
-		printf("<SERVER>:");scanf("%s",&text);
+		printf("<SERVER>:");gets(text);
 		if (handle_text(text))
 			if (!(send(client,sendText,sizeof(sendText),0)>0)){d("ERR");running=false;};
 	

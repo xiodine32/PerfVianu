@@ -1,5 +1,4 @@
 //DRAWER
-
 #include <winsock2.h>
 #include <windows.h>
 #include <vadefs.h>
@@ -9,7 +8,7 @@
 #include <SDL_opengl.h>
 
 struct team {
-	char nume[8];
+	char nume[17];
 	int punctaj;
 	int corecte;
 	int problema_bonus;
@@ -67,13 +66,13 @@ void teamscore_d(){
 		}
 	}
 	for (int i=1;i<=echipe;i++){
-		int drawedwidth=int(echipa[i].punctaj/double(max)*(SCREEN_WIDTH-200));
+		int drawedwidth=int(echipa[i].punctaj/double(max)*(SCREEN_WIDTH-300));
 		drawText(0,130+32*(i-1),16,1,1,1,1,echipa[i].nume,i);
 		if (max==echipa[i].punctaj){
-			draw2D(100,130+32*(i-1),drawedwidth,16,0,1,0,1);
+			draw2D(200,130+32*(i-1),drawedwidth,16,0,1,0,1);
 		}
 		else
-			draw2D(100,130+32*(i-1),drawedwidth,16,1,0,0,1);
+			draw2D(200,130+32*(i-1),drawedwidth,16,1,0,0,1);
 		drawText(SCREEN_WIDTH-100,130+32*(i-1),16,1,1,1,1,"%.3d",echipa[i].punctaj);
 	}
 }
@@ -106,24 +105,24 @@ void tablescreen_d(){
 		for (int i=1;i<=echipe;i++){
 			drawText(0,150+(i-1)*32+8,16,1,1,1,1,echipa[i].nume);
 			if (echipa[i].raspunsuri[j]==0)
-				draw2D(100+(j-1)*32,150+(i-1)*32,32,32,0.25,0.25,0.25,1);
+				draw2D(200+(j-1)*32,150+(i-1)*32,32,32,0.25,0.25,0.25,1);
 			else
 				if (probl[j].answered[i])
-					draw2D(100+(j-1)*32,150+(i-1)*32,32,32,0.25,1,0.25,1);
+					draw2D(200+(j-1)*32,150+(i-1)*32,32,32,0.25,1,0.25,1);
 				else
-					draw2D(100+(j-1)*32,150+(i-1)*32,32,32,1,0.25,0.25,1);
+					draw2D(200+(j-1)*32,150+(i-1)*32,32,32,1,0.25,0.25,1);
 
 
-			drawText(100+(j-1)*32+2,150+(i-1)*32+8+2,16,0,0,0,1,"%d",echipa[i].raspunsuri[j]);
-			drawText(100+(j-1)*32,150+(i-1)*32+8,16,1,1,1,1,"%d",echipa[i].raspunsuri[j]);
+			drawText(200+(j-1)*32+2,150+(i-1)*32+8+2,16,0,0,0,1,"%d",echipa[i].raspunsuri[j]);
+			drawText(200+(j-1)*32,150+(i-1)*32+8,16,1,1,1,1,"%d",echipa[i].raspunsuri[j]);
 			
 		}
-		drawText(100+(j-1)*32,134,16,1,1,1,1,"%.2d",j);
+		drawText(200+(j-1)*32,134,16,1,1,1,1,"%.2d",j);
 	}
 	for (int j=1;j<=probleme;j++)
 		for (int i=1;i<=echipe;i++)
 			if (echipa[i].problema_bonus==j)
-				draw2D(100+(j-1)*32,150+(i-1)*32,32,32,1,1,1,1,true);
+				draw2D(200+(j-1)*32,150+(i-1)*32,32,32,1,1,1,1,true);
 }
 
 void waitscreen_u(){
@@ -232,7 +231,7 @@ void drawText(int x,int y,double size,double r,double g,double b,double a,const 
 	int DX=x,DY=y;
 	glColor4f(r,g,b,a);
 	for (int i=0;text[i]!=0;i++){
-		if (text[i]==' ') {DX+=size;continue;}
+		if (text[i]==' ') {DX+=(5*size)/6;continue;}
 		glBegin(GL_QUADS);
 		glTexCoord2d(chars[text[i]].sx,chars[text[i]].sy);
 		glVertex2i(DX,DY);
@@ -261,7 +260,10 @@ void tick_sigla(){
 }
 
 void draw_timer(){
-	drawText(SCREEN_WIDTH/2-5*64,0,128,1,1,1,1,"%.2dm%.2ds",time_left/60,time_left%60);
+	if (time_left>0)
+		drawText(SCREEN_WIDTH/2-5*64,0,128,1,1,1,1,"%.2dm%.2ds",time_left/60,time_left%60);
+	else
+		drawText(SCREEN_WIDTH/2-10*64,0,128,1,1,1,1,"felicitari!");
 }
 void draw_sigla(){
 	if (!sigla)return;

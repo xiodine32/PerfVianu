@@ -19,8 +19,9 @@ void add_team_score(int team,int points);
 void add_answer(int team,int problem,int answer);
 void set_team_name(int team, char name[8]);
 void set_team_bonus(int team,int pb);
+void load_backup();
 struct team {
-	char nume[8];
+	char nume[17];
 	int punctaj;
 	int corecte;
 	int problema_bonus;
