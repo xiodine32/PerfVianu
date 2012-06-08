@@ -78,6 +78,8 @@ void handle_text(client *f,const char *text){
 		int tta=atoi(p),add_amm=0;
 		p=strtok(NULL,"|");
 		add_amm=atoi(p);
+		memset(tmp,0,sizeof(tmp));
+		
 		add_team_score(tta,add_amm);
 		return;
 	}
@@ -88,6 +90,9 @@ void handle_text(client *f,const char *text){
 		Q=strtok(NULL,"|");t=atoi(Q);
 		Q=strtok(NULL,"|");p=atoi(Q);
 		Q=strtok(NULL,"|");a=atoi(Q);
+		memset(tmp,0,sizeof(tmp));
+		sprintf(tmp,"TEAM %d PROBLEM %d ANSWER %d",t,p,a);
+		s(tmp);
 		add_answer(t,p,a);
 		return;
 	}

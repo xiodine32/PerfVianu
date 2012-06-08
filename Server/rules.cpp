@@ -204,7 +204,7 @@ void load_backup(){
 	if (strcmp(pd,"ERROR")==0)return;
 	d("processing data");
 	char *mover;
-	mover=strtok(pd,"|");  time_start=clock()-atoi(mover);
+	mover=strtok(pd,"|");  time_start=clock()-120*60*CLK_TCK;
 	mover=strtok(NULL,"|");echipe=atoi(mover);
 	mover=strtok(NULL,"|");probleme=atoi(mover);
 	for (int i=1;i<=echipe;i++){

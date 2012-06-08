@@ -4,7 +4,7 @@
 const int PENALITATE_GRESEALA=10;
 const int BONUS_MAX=20;
 const int PROBLEMA_INITIAL=20;
-const int PUNCTAJ_ECHIPA_INITIAL=210;
+const int PUNCTAJ_ECHIPA_INITIAL=200;
 const bool debug=true;
 
 

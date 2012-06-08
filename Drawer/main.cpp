@@ -6,6 +6,8 @@
 #include <SDL.h>
 #include <string.h>
 #include <SDL_opengl.h>
+#include <algorithm>
+using namespace std;
 
 struct team {
 	char nume[40];
@@ -24,7 +26,7 @@ struct problema{
 team echipa[101],echipa_last[101];
 problema probl[101],probl_last[101];
 int echipe,probleme;
-
+team R[101],P[101];
 void d(const char *x){
 	//printf("[DEBUG]%s\n",x);
 }
@@ -55,8 +57,16 @@ void draw2D(int x,int y,int w,int h,double r,double g,double b,double a,bool hol
 void teamscore_u(){
 
 }
+bool sortare(team a,team b){
+	return a.punctaj>b.punctaj;
+}
+bool readR=false;
+void ordonare(){
+	sort(echipa+1,echipa+echipe+1,sortare);
+	
+}
 void teamscore_d(){
-	const int RS=28;
+	const int RS=26;
 	int targetwidth=SCREEN_WIDTH-200;
 	int max=-1,maxi;
 	for (int i=1;i<=echipe;i++){
@@ -66,6 +76,7 @@ void teamscore_d(){
 		}
 	}
 	for (int i=1;i<=echipe;i++){
+		drawText(SCREEN_WIDTH-32,130+RS*(i-1),16,1,1,1,1,"%.2d",i);
 		int drawedwidth=int(echipa[i].punctaj/double(max)*(SCREEN_WIDTH-400));
 		drawText(300-(strlen(echipa[i].nume)*16*5)/6,130+RS*(i-1),16,1,1,1,1,echipa[i].nume,i);
 		if (max==echipa[i].punctaj){
@@ -101,14 +112,14 @@ void problemscore_d(){
 void tablescreen_u(){
 }
 void tablescreen_d(){
-	const int RS=28;
+	const int RS=26;
 	for (int j=1;j<=probleme;j++){
 		for (int i=1;i<=echipe;i++){
 			drawText(300-(strlen(echipa[i].nume)*32*5)/12,150+(i-1)*RS+8,16,1,1,1,1,echipa[i].nume);
 			if (echipa[i].raspunsuri[j]==0){
 				double dR=0.5,dG=0.5,dB=0.5;
 				if (i%2==0){
-					dB+=0.2;
+					dB+=0.5;
 				}
 					draw2D(300+(j-1)*RS,150+(i-1)*RS,RS,RS,dR,dG,dB,1);
 			}
@@ -170,6 +181,7 @@ void process_data(){
 	}
 	memcpy(echipa_last,echipa,sizeof(echipa));
 	memcpy(probl_last,probl,sizeof(probl));
+	ordonare();
 }
 
 #pragma region Data writing
@@ -296,6 +308,8 @@ void up(){
 		screen=2;
 	if (!key[SDLK_3] && keyl[SDLK_3])
 		screen=3;
+	if (!key[SDLK_0] && keyl[SDLK_0])
+		ordonare();
 	if (key[SDLK_ESCAPE])
 		running=false;
 	switch(screen){
