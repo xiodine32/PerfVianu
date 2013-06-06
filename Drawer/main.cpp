@@ -32,7 +32,7 @@ void d(const char *x){
 }
 SOCKET client;
 void drawText(int x,int y,double size,double r,double g,double b,double a,const char *X,...);
-char latestData[4096];
+char latestData[16384];
 int SCREEN_WIDTH,SCREEN_HEIGHT;
 bool running=true,key[512],keyl[512];
 int screen=0;
@@ -62,11 +62,11 @@ bool sortare(team a,team b){
 }
 bool readR=false;
 void ordonare(){
-	sort(echipa+1,echipa+echipe+1,sortare);
+	//sort(echipa+1,echipa+echipe+1,sortare);
 	
 }
 void teamscore_d(){
-	const int RS=26;
+	const int RS=32;
 	int targetwidth=SCREEN_WIDTH-200;
 	int max=-1,maxi;
 	for (int i=1;i<=echipe;i++){
@@ -112,23 +112,25 @@ void problemscore_d(){
 void tablescreen_u(){
 }
 void tablescreen_d(){
-	const int RS=26;
+	const int RS=32;
 	for (int j=1;j<=probleme;j++){
 		for (int i=1;i<=echipe;i++){
 			drawText(300-(strlen(echipa[i].nume)*32*5)/12,150+(i-1)*RS+8,16,1,1,1,1,echipa[i].nume);
 			if (echipa[i].raspunsuri[j]==0){
-				double dR=0.5,dG=0.5,dB=0.5;
+				double dR=0.5,dG=0.5,dB=0.5; //color drawing
 				if (i%2==0){
-					dB+=0.5;
-				}
-					draw2D(300+(j-1)*RS,150+(i-1)*RS,RS,RS,dR,dG,dB,1);
+					dB+=0.2;
+				} else 
+					dR+=0.2;
+				draw2D(300+(j-1)*RS,150+(i-1)*RS,RS,RS,dR,dG,dB,1);
 			}
-			else
+			else {
+				printf("ECHIPA %d PROBLEMA %d :%d\n",i,j,(echipa[i].raspunsuri[j]==0));
 				if (probl[j].answered[i])
-					draw2D(300+(j-1)*RS,150+(i-1)*RS,RS,RS,0.25,1,0.25,1);
+					draw2D(300+(j-1)*RS,150+(i-1)*RS,RS,RS,0,1,0,1);
 				else
 					draw2D(300+(j-1)*RS,150+(i-1)*RS,RS,RS,1,0.25,0.25,1);
-
+			}
 
 			drawText(300+(j-1)*RS+2+RS/3,150+(i-1)*RS+8+2,16,0,0,0,1,"%d",echipa[i].raspunsuri[j]);
 			drawText(300+(j-1)*RS+RS/3,150+(i-1)*RS+8,16,1,1,1,1,"%d",echipa[i].raspunsuri[j]);
@@ -152,7 +154,7 @@ void waitscreen_d(){
 }
 
 void process_data(){
-	char pd[4096];
+	char pd[16384];
 	memcpy(pd,latestData,sizeof(latestData));
 	
 	if (strcmp(pd,"ERROR")==0)return;
@@ -243,7 +245,7 @@ void load(){
 void drawText(int x,int y,double size,double r,double g,double b,double a,const char *X,...){
 	va_list arg;
 	va_start(arg,X);
-	char text[4096]={0};
+	char text[16384]={0};
 	vsprintf(text,X,arg);
 	glBindTexture(GL_TEXTURE_2D,textureID);
 	int DX=x,DY=y;
@@ -338,7 +340,7 @@ DWORD WINAPI thread(LPVOID arg){
 	generate_font();
 	SDL_Init(SDL_INIT_VIDEO);
 	int w=int(GetSystemMetrics(SM_CXFULLSCREEN)),h=int(GetSystemMetrics(SM_CYFULLSCREEN));
-	SCREEN_WIDTH=1280;SCREEN_HEIGHT=1024;
+	SCREEN_WIDTH=1024;SCREEN_HEIGHT=800;
 	SDL_SetVideoMode(w,h,0,SDL_OPENGL|SDL_FULLSCREEN);
 
 	glEnable(GL_TEXTURE_2D);
@@ -372,7 +374,7 @@ DWORD WINAPI thread(LPVOID arg){
 }
 
 int main(int a,char **argv){
-	char data[4096];
+	char data[16384];
 	char strIPADDR[128]={0};printf("IP ADDRESS:");scanf("%s",&strIPADDR);
 	int tmp=0;
 	CreateThread(NULL,0,thread,&tmp,0,0);

@@ -21,14 +21,14 @@ bool started;
 
 void readconfig(){
 	FILE *f=fopen("config.txt","r");
-	char text[4096];
-	fgets(text,4096,f);
+	char text[16384];
+	fgets(text,16384,f);
 	fscanf(f,"\n%d\n",&echipe);
-	fgets(text,4096,f);
+	fgets(text,16384,f);
 	fscanf(f,"\n%d\n",&contest_time);
-	fgets(text,4096,f);
+	fgets(text,16384,f);
 	fscanf(f,"\n%d\n",&probleme);
-	fgets(text,4096,f);fscanf(f,"\n");
+	fgets(text,16384,f);fscanf(f,"\n");
 	for (int i=1;i<=probleme;i++){
 		fscanf(f,"%d ",&probl[i].raspuns);
 		probl[i].puncte=PROBLEMA_INITIAL;
@@ -36,7 +36,7 @@ void readconfig(){
 		for (int j=1;j<=echipe;j++)
 			probl[i].answered[j]=false;
 	}
-	fgets(text,4096,f);
+	fgets(text,16384,f);
 	for (int i=1;i<=echipe;i++){
 		fgets(echipa[i].nume,40,f);
 		while (echipa[i].nume[strlen(echipa[i].nume)-1]=='\n')
@@ -76,13 +76,13 @@ void force_end_contest(){
 
 const char *say_time_left(){
 	
-	char towrite[4096]={"ERROR"};
+	char towrite[16384]={"ERROR"};
 	if (!started) {nostart();return towrite;}
 	sprintf(towrite,"%d",contest_time*60-(clock()-time_start)/CLK_TCK);
 	return towrite;
 }
 const char *say_drawables(){
-	char towrite[4096]={"ERROR"};memset(towrite,0,sizeof(towrite));strcpy(towrite,"ERROR");
+	char towrite[16384]={"ERROR"};memset(towrite,0,sizeof(towrite));strcpy(towrite,"ERROR");
 	if (!started) {nostart();return towrite;}
 	sprintf(towrite,"%s|%d|%d|",say_time_left(),echipe,probleme);
 	for (int i=1;i<=echipe;i++){
@@ -155,7 +155,7 @@ void tick(){
 	if (!started) return;
 	static int draw=-1;
 	if (++draw==0){
-		char tw[4096]={0};strcpy(tw,say_drawables());
+		char tw[16384]={0};strcpy(tw,say_drawables());
 		FILE *a=fopen("backup.txt","w");
 		fprintf(a,"%s",tw);
 		fclose(a);
@@ -186,7 +186,7 @@ void set_team_bonus(int team,int pb){
 	if (!started) {nostart();return;}
 
 	int ela=(clock()-time_start)/CLK_TCK;
-	if (ela>600) {s("Cannot modify team bonus, time expired.");return;}
+	if (ela>700) {s("Cannot modify team bonus, time expired.");return;}
 	if (echipa[team].problema_bonus!=-1){
 		s("Team bonus already modified");
 		return;
@@ -198,13 +198,13 @@ void set_team_bonus(int team,int pb){
 void load_backup(){
 	started=true;
 	FILE *f=fopen("backup.txt","r");
-	char pd[4096];
-	fgets(pd,4096,f);
+	char pd[16384];
+	fgets(pd,16384,f);
 	
 	if (strcmp(pd,"ERROR")==0)return;
 	d("processing data");
 	char *mover;
-	mover=strtok(pd,"|");  time_start=clock()-120*60*CLK_TCK;
+	mover=strtok(pd,"|");  time_start=clock()-10*60*CLK_TCK;
 	mover=strtok(NULL,"|");echipe=atoi(mover);
 	mover=strtok(NULL,"|");probleme=atoi(mover);
 	for (int i=1;i<=echipe;i++){

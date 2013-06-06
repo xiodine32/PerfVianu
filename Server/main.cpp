@@ -45,7 +45,7 @@ void handle_text(client *f,const char *text){
 	}
 	if (text[0]=='S'){
 		d("Changing Special Problem");
-		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char tmp[16384]={0};memcpy(tmp,text,sizeof(tmp));
 		char *p=strtok(tmp,"|");
 		p=strtok(NULL,"|");
 		int tta=atoi(p);
@@ -66,13 +66,13 @@ void handle_text(client *f,const char *text){
 		return;
 	}
 	if (strcmp(text,"data")==0){
-		char toSend[4096]={0};
+		char toSend[16384]={0};
 		strcpy(toSend,say_drawables());
 		send(f->s,toSend,sizeof(toSend),0);
 		return;
 	}
 	if (strstr(text,"add|")){
-		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char tmp[16384]={0};memcpy(tmp,text,sizeof(tmp));
 		char *p=strtok(tmp,"|");
 		p=strtok(NULL,"|");
 		int tta=atoi(p),add_amm=0;
@@ -84,7 +84,7 @@ void handle_text(client *f,const char *text){
 		return;
 	}
 	if (strstr(text,"a|")){
-		char tmp[4096]={0};memcpy(tmp,text,sizeof(tmp));
+		char tmp[16384]={0};memcpy(tmp,text,sizeof(tmp));
 		char *Q=strtok(tmp,"|");
 		int t,p,a;
 		Q=strtok(NULL,"|");t=atoi(Q);
@@ -156,7 +156,7 @@ int main(){
 		for (vector<client>::iterator i=tempo.begin();i!=tempo.end();i++){
 			++t;
 			if (i->destroyed)continue;
-			char text[4096];
+			char text[16384];
 			int out=recv(i->s,text,sizeof(text),0);
 			if (out>0){
 				handle_text(&(*i),text);

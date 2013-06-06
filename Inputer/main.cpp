@@ -18,13 +18,13 @@ void d(const char *data){
 }
 
 SOCKET client;
-char sendText[4096]={0},recvText[4096]={0};
+char sendText[16384]={0},recvText[16384]={0};
 int handle_text(const char *text){
 	if (strcmp(text,"help")==0){
 		printf("\nAdd an answer: a<TEAM><PROBLEM><ANSWER>\n");
 		printf("Start Server: start\n");
 		printf("Time Left: timeleft\n");
-		printf("Set Team Special Problem: setp<TEAM><#>\n");
+		printf("Set Team Special Problem: setp<TEAM><##> (with leading 0)\n");
 		printf("Add/Subtract points: add_<TEAM>|<POINTS> (can be negative)\n");
 		printf("\n");
 		return 0;
@@ -59,7 +59,7 @@ int handle_text(const char *text){
 		return 1;
 	}
 	if (text[0]=='a' && (text[1]>='0' && text[1]<='9')){
-		char tmp[4096]={0};strcpy(tmp,text);
+		char tmp[16384]={0};strcpy(tmp,text);
 		printf("Answer for TEAM:%c%c - PROBLEM:%c%c - %c%c%c%c\n",tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]);
 		char ans[1024]={0};
 		printf("Are you sure? (yes/YES/Y/y) :");scanf("%s",&ans);
@@ -89,9 +89,9 @@ DWORD WINAPI listener(LPVOID arg){
 	return 0;
 }
 bool newData=false;
-char toSend[4096]={0};
+char toSend[16384]={0};
 DWORD WINAPI sender(LPVOID arg){
-	char tmp[4096]={"ok"};
+	char tmp[16384]={"ok"};
 	if (newData){
 		newData=false;
 	}
@@ -103,7 +103,7 @@ DWORD WINAPI sender(LPVOID arg){
 	return 0;
 }
 int main(){
-	char text[4096]={"127.0.0.1"};
+	char text[16384]={"127.0.0.1"};
 	printf("ENTER SERVER IP:");scanf("%s",&text);
 	WSADATA dat;
 	WSAStartup(MAKEWORD(2,2),&dat);
